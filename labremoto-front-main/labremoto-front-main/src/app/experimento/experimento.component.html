@@ -1,0 +1,589 @@
+<div class='content'>
+  <div class='row mt-4'>
+    <div class='col-md-4'>
+      <div class="card">
+        <div class="card-header">
+          Dados do Robô
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class='row'>
+              <div class='col-6'>Velocidade Linear</div>
+              <div class='col-6'>{{ ev3Data.linearVel }} <small>m/s</small></div>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class='row'>
+              <div class='col-6'>Velocidade Angular</div>
+              <div class='col-6'>{{ ev3Data.angularVel }} <small>m/s</small></div>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class='row'>
+              <div class='col-6'>Pos. Atual</div>
+              <div class='col-6'>({{ ev3Data.currentPosX }} <small>x</small>,{{ ev3Data.currentPosY }} <small>y</small>)
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class='row'>
+              <div class='col-6'>Pos. Objetivo</div>
+              <div class='col-6'>({{ ev3Data.goalPosX }} <small>x</small>,{{ ev3Data.goalPosY }} <small>y</small>)</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card" style='margin-top: 20px; margin-bottom: 35%;' *ngIf='currentExperimento != null'>
+        <div class="card-header">
+          Dados do Experimento
+        </div>
+        <ng-container *ngIf='currentExperimento.codExperimento == 1'>
+
+          <div class="card-body">
+            Clique na imagem da câmera para o robô se direcionar até a posição informada.
+            <h4 class='dados-experimento-title'>Parâmetros</h4>
+            <div class='row' style='margin-bottom: 15px;'>
+              <div class='col-md-5 col-sm-12'>Objetivo</div>
+              <div class='col-md-7 col-sm-12'>({{ apontar.goalX }}x, {{ apontar.goalY }}y)</div>
+            </div>
+            <div class='row'>
+              <div class='col-sm-12' style='margin-bottom: 15px;'>
+                <div class='alert alert-warning' alert-dismissible fade show role="alert">Após clicar na tela, a
+                  coordenada do objetivo aparece aqui. Lembre-se
+                  de clicar em "Iniciar Experimento" para fazer o robô se movimentar.
+                  <hr>
+                  <small>Ao clicar na tela o objetivo já fica salvo, sem necessidade de salvar os parâmetros para
+                    alterar o objetivo.</small>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <form [formGroup]="experimentoParametroForm">
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputTipoControlador'>Tipo de Controlador</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <select class="form-control" id="deInputTipoControlador" formControlName="tipoControlador">
+                      <option value="1">PID Duplo - Coordenadas Polares</option>
+                      <option value="2">Proporcional - Feedback Linearization</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputAlgoritmoBusca'>Algoritmo de Busca</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <select class="form-control" id="deInputAlgoritmoBusca" formControlName="algoritmoBusca">
+                      <option value="1">Astar (A*)</option>
+                      <option value="2">Breadth-First-Search</option>
+                      <option value="3">Best-First-Search</option>
+                      <option value="4">Jump Point</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputHeuristica'>Heuristica</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <select class="form-control" id="deInputHeuristica" formControlName="heuristica">
+                      <option value="1">Euclidiana</option>
+                      <option value="2">Manhattan</option>
+                      <option value="3">Chebyshev</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputMapScale'>Escala da Imagem</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <input class='form-control' type='number' id='deInputMapScale' formControlName="mapScale" />
+                  </div>
+                </div>
+              </div>
+
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputSafeScale'>Escala de Segurança</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <input class='form-control' type='number' id='deInputSafeScale' formControlName="safeScale" />
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputKp' *ngIf="experimentoParametroForm.get('tipoControlador').value == 1">Kp (PID 1 -
+                    Linear)</label>
+                  <label for='deInputKp' *ngIf="experimentoParametroForm.get('tipoControlador').value == 2">Kp</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <input class='form-control' type='number' id='deInputKp' formControlName="kp" />
+                  </div>
+                </div>
+              </div>
+              <ng-container *ngIf="experimentoParametroForm.get('tipoControlador').value == 1">
+                <div class='row'>
+                  <div class='col-md-5'>
+                    <label for='deInputKd'>Kd (PID 1 - Linear)</label>
+                  </div>
+                  <div class='col-md-7'>
+                    <div class='form-group'>
+                      <input class='form-control' type='number' id='deInputKd' formControlName="kd" />
+                    </div>
+                  </div>
+                </div>
+                <div class='row'>
+                  <div class='col-md-5'>
+                    <label for='deInputKi'>Ki (PID 1 - Linear)</label>
+                  </div>
+                  <div class='col-md-7'>
+                    <div class='form-group'>
+                      <input class='form-control' type='number' id='deInputKi' formControlName="ki" />
+                    </div>
+                  </div>
+                </div>
+                <div class='row'>
+                  <div class='col-md-5'>
+                    <label for='deInputKp_ang'>Kp (PID 2 - Angular)</label>
+                  </div>
+                  <div class='col-md-7'>
+                    <div class='form-group'>
+                      <input class='form-control' type='number' id='deInputKp_ang' formControlName="kp_ang" />
+                    </div>
+                  </div>
+                </div>
+                <div class='row'>
+                  <div class='col-md-5'>
+                    <label for='deInputKd_ang'>Kd (PID 2 - Angular)</label>
+                  </div>
+                  <div class='col-md-7'>
+                    <div class='form-group'>
+                      <input class='form-control' type='number' id='deInputKd_ang' formControlName="kd_ang" />
+                    </div>
+                  </div>
+                </div>
+                <div class='row'>
+                  <div class='col-md-5'>
+                    <label for='deInputKi_ang'>Ki (PID 2 - Angular)</label>
+                  </div>
+                  <div class='col-md-7'>
+                    <div class='form-group'>
+                      <input class='form-control' type='number' id='deInputKi_ang' formControlName="ki_ang" />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <div class='row'>
+                <div class='col-md-12'>
+                  <button class='btn btn-primary btn-block' style='margin-bottom: 10px;' type='button'
+                    (click)="salvarParametrosExperimento()">Salvar
+                    Parâmetros</button>
+                  <div class="alert alert-success" role="alert" *ngIf='parametrosSalvosOk'>
+                    Os parâmetros foram salvos com sucesso.
+                  </div>
+                  <div class="alert alert-warning" role="alert" *ngIf='parametrosSalvosErr'>
+                    Ocorreu um erro ao salvar os parâmetros, verifique seu formulário e tente novamente.
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </ng-container>
+        <ng-container *ngIf='currentExperimento.codExperimento == 2'>
+
+          <div class="card-body">
+            Adicione instruções de trajetória para o robô e depois rode o experimento.
+            <h4 class='dados-experimento-title'>Instruções de Trajetória</h4>
+            <div class='row'>
+              <div class='col-md-12 instrucoes-wrap' *ngIf='currentExperimentoInstrucoes != null'>
+                <ng-container *ngIf='currentExperimentoInstrucoes.length == 0'>Nenhuma instrução cadastrada.
+                </ng-container>
+                <ng-container *ngIf='currentExperimentoInstrucoes.length > 0'>
+                  <div class='row instrucoes-small' *ngFor='let instrucao of currentExperimentoInstrucoes'>
+                    <div class="col-md-3 col-sm-12">
+                      {{ getTipoInstrucaoLabel(instrucao.tipo) }}
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                      {{ getTipoInstrucaoValor(instrucao) }}
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                      {{ instrucao.timer }}ms
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+              <div class='col-md-12'>
+                <button class='btn btn-primary btn-block' type='button' (click)="openInstrucoesModal()">Alterar
+                  Instruções</button>
+              </div>
+            </div>
+            <h4 class='dados-experimento-title'>Parâmetros</h4>
+            <form [formGroup]="experimentoParametroForm">
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputObstaculos'>Checagem Obstáculos</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <select class="form-control" id="deInputObstaculos" formControlName="obstaculos">
+                      <option value="true">Habilitado</option>
+                      <option value="false">Desabilitado</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputKp'>Kp (PID)</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <input class='form-control' formControlName="kp" type='number' id='deInputKp' />
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputKd'>Kd (PID)</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <input class='form-control' type='number' formControlName="kd" id='deInputKd' />
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-5'>
+                  <label for='deInputKi'>Ki (PID)</label>
+                </div>
+                <div class='col-md-7'>
+                  <div class='form-group'>
+                    <input class='form-control' type='number' formControlName="ki" id='deInputKi' />
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-12'>
+                  <button class='btn btn-primary btn-block' style='margin-bottom: 10px;' type='button'
+                    (click)="salvarParametrosExperimento()">Salvar
+                    Parâmetros</button>
+                  <div class="alert alert-success" role="alert" *ngIf='parametrosSalvosOk'>
+                    Os parâmetros foram salvos com sucesso.
+                  </div>
+                  <div class="alert alert-warning" role="alert" *ngIf='parametrosSalvosErr'>
+                    Ocorreu um erro ao salvar os parâmetros, verifique seu formulário e tente novamente.
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </ng-container>
+      </div>
+
+
+
+    </div>
+
+    <div class='col-md-8 pl-0 pr-0'>
+      <div class="card">
+        <div class="card-header">
+          Câmera
+        </div>
+        <ul class="nav nav-tabs camera-nav-tab">
+          <li class="nav-item">
+            <span class="nav-link" (click)='changeCameraNavTab(1)'>Câmera</span>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link" (click)='changeCameraNavTab(2)'>Mapeamento</span>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link" (click)='changeCameraNavTab(3)'>Trajetória</span>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link" (click)='changeCameraNavTab(4)'>Mostrar Tudo</span>
+          </li>
+        </ul>
+        <div class="card-body" id="camera-wrap" *ngIf='cameraNavTab == 1 || cameraNavTab == 4'>
+          <img (click)="getCameraMouseEvent($event)" #cameraWrap src='{{ getCameraImage() }}' id='camera-image' />
+        </div>
+        <div class="card-body" id="mapeamento-wrap" *ngIf='cameraNavTab == 2 || cameraNavTab == 4'>
+          <img (click)="getCameraMouseEvent($event)" #cameraMapWrap src='{{ getMapeamentoImage() }}'
+            id='mapeamento-image' />
+        </div>
+        <div class="card-body" id="trajetoria-wrap" *ngIf='cameraNavTab == 3 || cameraNavTab == 4'>
+          <img #cameraTrajeWrap src='{{ getTrajetoriaImage() }}' id='trajetoria-image' />
+        </div>
+        <div class='card-body'>
+          <div><label>Alterar tempo de atualização da câmera.</label></div>
+          <div class='row'>
+            <div class='col-md-4 col-sm-12'>
+              <div class='input-group input-group-sm md-3'>
+                <input class='form-control form-control-sm' type='number' [(ngModel)]='refreshTime' />
+                <div class="input-group-append">
+                  <div class="input-group-text">ms</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='row mt-1'>
+            <div class='col-md-3 col-sm-12'>
+              <button type='button' class='btn btn-sm btn-light' (click)='updateRefreshTime()'>Atualizar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card  mt-3" *ngIf='currentExperimento != null'>
+        <div class="card-header">
+          Resultados
+        </div>
+        <div class="card-body" id="resultado-wrap" *ngIf='experimentoResultados.length == 0'>
+          Nenhum resultado encontrado.
+        </div>
+        <div class="card-body" id="resultado-wrap" *ngIf='experimentoResultados.length > 0'>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Início</th>
+                <th scope="col">Tempo</th>
+                <th scope="col">Pos x</th>
+                <th scope="col">Pos y</th>
+                <th scope="col">Vel Linear (m/s)</th>
+                <th scope="col">Vel Angular (rad/s)</th>
+                <th scope="col">#</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let resultado of experimentoResultados; let i = index '>
+                <td scope="row">{{ resultado.startTime | date: 'HH:mm' }}</td>
+                <td scope="row">{{ resultado.dtCriacao | date: 'HH:mm:ss' }}</td>
+                <td>{{ resultado.posX }}</td>
+                <td>{{ resultado.posY }}</td>
+                <td>{{ resultado.linearVel }}</td>
+                <td>{{ resultado.angularVel }}</td>
+                <td><span class='fa fa-plus'></span></td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<div id='low-bar'>
+  <div class='row'>
+    <div class='col-md-1 col-sm-12 left-bottom'>
+      <div class='row'>
+        <div class='col-md-12'>
+          <span class="badge badge-success">Sessão Ativa</span>
+        </div>
+        <div class='col-md-12'>
+          <countdown *ngIf='sessionCountdown != null' [config]="sessionCountdown"></countdown>
+        </div>
+      </div>
+    </div>
+    <div class='col-md-11 col-sm-12' *ngIf='currentExperimento == null && teleoperacao == false'>
+      Nenhum experimento rodando.
+      <button class='btn btn-light btn-sm' type="button" (click)='openNewExperimentoModal()'>Iniciar
+        Experimento</button>
+      <button class='btn btn-dark btn-sm ml-2' type="button" (click)='iniciarTeleoperacao()'>Teleoperação</button>
+    </div>
+    <div class='col-md-8 col-sm-12' *ngIf='currentExperimento == null && teleoperacao == true'>
+      Utilize os botões ao lado ou as teclas (wasd) para teleoperar o robô.
+      <div>
+        <button class='btn btn-danger btn-sm' type="button" (click)='finalizarTeleoperacao()'>Finalizar
+          Teleoperação</button>
+      </div>
+    </div>
+    <div class='col-md-3 col-sm-12' *ngIf='currentExperimento == null && teleoperacao == true'>
+      <div class='row'>
+        <div class='col-md-12'>
+          <button class='btn btn-dark btn-sm' style='margin-left: 38px;' type="button"
+            (click)='teleoperacaoInstrucao(1)'><span class='fa fa-arrow-up'></span></button>
+        </div>
+      </div>
+      <div class='row mt-1'>
+        <div class='col-md-12'>
+
+          <button class='btn btn-dark btn-sm ml-1' type="button" (click)='teleoperacaoInstrucao(3)'><span
+              class='fa fa-arrow-left'></span></button>
+          <button class='btn btn-dark btn-sm ml-1' type="button" (click)='teleoperacaoInstrucao(2)'><span
+              class='fa fa-arrow-down'></span></button>
+          <button class='btn btn-dark btn-sm ml-1' type="button" (click)='teleoperacaoInstrucao(4)'><span
+              class='fa fa-arrow-right'></span></button>
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf='currentExperimento != null'>
+      <div class='col-md-3 col-sm-12'>
+        <strong>Experimento Atual</strong> {{ currentExperimento.label }}<br />
+        <strong>Situação </strong>
+        <ng-container *ngIf='experimentoRunStatus == 0'>Parado</ng-container>
+        <ng-container *ngIf='experimentoRunStatus == 1'>Inicializando...</ng-container>
+        <ng-container *ngIf='experimentoRunStatus == 2'>Rodando</ng-container>
+        <ng-container *ngIf='experimentoRunStatus == 3'>Erro</ng-container>
+      </div>
+      <div class='col-md-7 col-sm-12'>
+        <div class='row'>
+          <button type="button" (click)='playExperimento()' [disabled]='experimentoRunStatus != 0'
+            class='col-md-3 col-sm-12 control-experimento play-experimento'>
+            <span class='fa fa-play'></span> Rodar Experimento
+          </button>
+          <button type="button" (click)="stopExperimento()" [disabled]='experimentoRunStatus != 2'
+            class='col-md-3 ml-2 col-sm-12 control-experimento stop-experimento'>
+            <span class='fa fa-stop'></span> Parar Experimento
+          </button>
+          <button type="button" (click)="finishExperimento()" [disabled]='experimentoRunStatus == 2'
+            class='col-md-3 ml-2 col-sm-12 control-experimento finish-experimento'>
+            <span class='fa fa-times'></span> Finalizar Experimento
+          </button>
+        </div>
+        <div class='clearfix'></div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>
+
+<modal-alert title='Iniciar Novo Experimento' modalId='novoExperimentoModal' noButtons=true modalSize=1>
+  <div class='card'>
+    <div class='card-body'>
+      <div class='row'>
+        <div class='col-md-12'></div>
+      </div>
+      <div class='row'>
+        <div *ngFor="let experimento of experimentos" class='col-md-4 p-2 col-sm-12 experimento-select'>
+          <div class='experimento-select-wrap' (click)="startExperimento(experimento.codigo)">
+            {{ experimento.label }}
+            <div class='experimento-desc'>
+              {{ experimento.descricao }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</modal-alert>
+
+<modal-alert title='Instruções da Trajetória' modalSize="3" modalId='instrucoesModal' noButtons="true">
+  <div class='alert alert-info'>
+    Adicione abaixo as instruções que o robô deve realizar no experimento.<br />
+    Cada instrução é composta por uma ação, uma quantização da instrução e (ou) um tempo de duração para a mesma.
+    <br /><br />
+    <small>Obs: você também pode importar e exportar as ações, para reutilizar em outros experimentos.</small>
+  </div>
+  <div class='instrucoes-list-wrap' *ngIf='currentExperimentoInstrucoes != null'>
+    <div class='padding' *ngIf='currentExperimentoInstrucoes.length == 0'>
+      Não há instruções para esse experimento.
+    </div>
+    <div *ngIf='currentExperimentoInstrucoes.length > 0'>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tipo</th>
+            <th scope="col" colspan="2">Valores</th>
+            <th scope="col">Tempo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let instrucao of currentExperimentoInstrucoes; let i = index '>
+            <th scope="row">{{ i+1 }}</th>
+            <td>
+              {{ getTipoInstrucaoLabel( instrucao.tipo ) }}
+            </td>
+            <td colspan="2">
+              {{ getTipoInstrucaoValor( instrucao ) }}
+            </td>
+            <td>
+              {{ instrucao.timer }}ms
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class='new-instrucao-wrap card'>
+    <div class='card-header'>
+      Adicionar nova instrução
+    </div>
+    <div class='card-body'>
+      <form [formGroup]="expInstrucaoForm" *ngIf='expInstrucaoForm != undefined' class='form-inline'>
+        <select class="form-control col-md-3" id="expInstrucaoTipo" formControlName="tipoInstrucao"
+          (change)="resetExpInstrucaoQuant()">
+          <option value=1>Andar Reto</option>
+          <option value=2>Realizar Curva</option>
+          <option value=3>Rotacionar</option>
+          <option value=4>Parar</option>
+        </select>
+        <ng-container *ngIf='expInstrucaoForm.get("tipoInstrucao").value == 1'>
+          <div class="input-group col-md-6">
+            <input type="text" class="form-control" placeholder="Velocidade Linear" formControlName="velLinear">
+            <div class="input-group-append">
+              <div class="input-group-text">m/s</div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf='expInstrucaoForm.get("tipoInstrucao").value == 2'>
+          <div class="input-group col-md-3">
+            <input type="text" class="form-control" placeholder="Velocidade Linear" formControlName="velLinear">
+            <div class="input-group-append">
+              <div class="input-group-text">m/s</div>
+            </div>
+          </div>
+          <div class="input-group col-md-3">
+            <input type="text" class="form-control" placeholder="Velocidade Angular" formControlName="velAngular">
+            <div class="input-group-append">
+              <div class="input-group-text">rad/s</div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf='expInstrucaoForm.get("tipoInstrucao").value == 3'>
+          <div class="input-group col-md-6">
+            <input type="text" class="form-control" placeholder="Ângulo de Rotação" formControlName="rotAngulo">
+            <div class="input-group-append">
+              <div class="input-group-text">º</div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf='expInstrucaoForm.get("tipoInstrucao").value == 4'>
+          <div class="input-group col-md-6">
+            <input type="text" class="form-control" disabled placeholder="-">
+          </div>
+        </ng-container>
+        <div class="input-group col-md-3">
+          <input type="text" formControlName="timer" class="form-control" placeholder="Duração">
+          <div class="input-group-append">
+            <div class="input-group-text">ms</div>
+          </div>
+        </div>
+        <div style="display: block; margin-top: 10px;">
+          <button type="button" class="btn btn-success btn-sm mb-2" (click)='addInstrucaoToArray()'>Adicionar
+            Instrução</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div>
+    <button type='button' class='btn btn-primary' (click)='updateInstrucoesExperimento()'>Salvar</button>
+  </div>
+</modal-alert>

@@ -1,0 +1,44 @@
+<div class='row mt-5'>
+  <div class='col-md-12'>
+    <div class="card">
+      <div class="card-header">
+        Status do laboratório
+      </div>
+      <div class='card-body'>
+        <ng-container *ngIf='laboratorioAtivo == null'>
+          <h2 class="display-4 card-title"><strong class='text-success'>Disponível</strong></h2>
+          <div class="card-text">O laboratório está disponível para utilização, clique no botão abaixo para iniciar uma
+            sessão e seus experimentos.
+            <div class='small'><strong>Observação:</strong> Ao iniciar a sessão o laboratório ficará disponível para o
+              seu
+              usuário por um período de 20 minutos, sua sessão será expirada caso exceda 5 minutos de inatividade.</div>
+          </div>
+          <a href="#" class="btn btn-dark mt-3" routerLink="setup">Iniciar Sessão</a>
+        </ng-container>
+        <ng-container *ngIf='laboratorioAtivo != null'>
+          <h2 class="display-4 card-title"><strong class='text-danger'>Indisponível</strong></h2>
+          <div class="card-text">Infelizmente o laboratório já está em uso por outro usuário ou está temporariamente fora
+            do ar. Você pode agendar um horário de utilização através do botão abaixo ou aguardar o término do uso.
+            <div class='small'><strong>Previsão de término:</strong> {{ laboratorioAtivo.dtFim | date: 'dd/MM/yyyy HH:mm' }}</div>
+          </div>
+          <a href="#" class="btn btn-dark mt-3" routerLink="agenda">Agendar Acesso ao Laboratório</a>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<div class='row'>
+
+  <div class='col-md-6 col-sm-5 mt-2'>
+    <h3 class='text-muted session-title'>Meus Últimos Experimentos</h3>
+    <div class="alert alert-dark" role="alert">
+      Você ainda não realizou nenhum experimento.
+    </div>
+  </div>
+  <div class='col-md-6 col-sm-5 mt-2'>
+    <h3 class='text-muted session-title'>Meus Agendamentos</h3>
+    <div class="alert alert-dark" role="alert">
+      Você não possui agendamentos.
+    </div>
+  </div>
+</div>

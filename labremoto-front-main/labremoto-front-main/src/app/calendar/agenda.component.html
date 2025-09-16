@@ -1,0 +1,156 @@
+<div class='row mt-3'>
+  <div class='col-md-12'>
+    <div class="card">
+      <div class='card-body'>
+        <div class='panel border-bottom p-2 mb-3'>
+          <h4>Agendamento do Laboratório</h4>
+          Utilize o calendário para visualizar os horários em que o laboratório estará ocupado e o formulário para
+          agendar seus horários de utilização.
+        </div>
+        <div class='row m-2'>
+          <div class='col-md-6 col-sm-12'>
+            <div class="row text-center">
+              <div class="col-md-4">
+                <div class="btn-group-sm btn-group">
+                  <div class="btn btn-dark" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+                    (viewChange)="listAgendaFull()" (viewDateChange)="listAgendaFull()">
+                    Anterior
+                  </div>
+                  <div class="btn btn-light" mwlCalendarToday [(viewDate)]="viewDate" (viewChange)="listAgendaFull()"
+                    (viewDateChange)="listAgendaFull()">
+                    Hoje
+                  </div>
+                  <div class="btn btn-dark" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+                    (viewChange)="listAgendaFull()" (viewDateChange)="listAgendaFull()">
+                    Próximo
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <h5>{{ viewDate | calendarDate:(view + 'ViewTitle'):'pt-BR' }}</h5>
+              </div>
+              <div class="col-md-4">
+                <div class="btn-group-sm btn-group">
+                  <div class="btn btn-light" (viewChange)="listAgendaFull()" (click)="setView(CalendarView.Month)"
+                    [class.active]="view === CalendarView.Month">
+                    Mês
+                  </div>
+                  <div class="btn btn-light" (click)="setView(CalendarView.Week)"
+                    [class.active]="view === CalendarView.Week">
+                    Semana
+                  </div>
+                  <div class="btn btn-light" (click)="setView(CalendarView.Day)"
+                    [class.active]="view === CalendarView.Day">
+                    Dia
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+
+            <div *ngIf="events$ | async; let events">
+              <div [ngSwitch]="view">
+                <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+                  [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+                  (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+                </mwl-calendar-month-view>
+                <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+                  [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+                  (eventTimesChanged)="eventTimesChanged($event)">
+                </mwl-calendar-week-view>
+                <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events"
+                  [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+                  (eventTimesChanged)="eventTimesChanged($event)">
+                </mwl-calendar-day-view>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-6 col-sm-12'>
+            <h4>Agendar Horário de Uso</h4>
+
+            <div class="alert alert-light" role="alert">
+              Por favor verifique se o horário de agendamento está disponível através do
+              calendário ao lado.
+            </div>
+            <form [formGroup]="agendarHorarioForm">
+              <div class='row mt-4'>
+                <div class='col-md-10'>
+                  <div class='form-group'>
+                    <label>Data do Agendamento</label>
+                    <input type='date' class='form-control' formControlName='dtAgendamento' />
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-md-6'>
+                  <div class='form-group'>
+                    <label>Horário de Início</label>
+                    <div class='row'>
+                      <div class='col-5'>
+                        <select class="form-control form-control-sm" formControlName='horaAgendamento' (change)='updateHorarioFim()'> 
+                          <option *ngFor='let number of [].constructor(24); let i = index' value='{{i}}'>
+                            <ng-container *ngIf='i < 10'>0</ng-container>{{i}}
+                          </option>
+                        </select>
+                      </div>
+                      <div class='col-1'>:</div>
+                      <div class='col-5'>
+                        <select class="form-control form-control-sm" formControlName='minutoAgendamento' (change)='updateHorarioFim()'>
+                          <option *ngFor='let number of [].constructor(60); let i = index' value='{{i}}'>
+                            <ng-container *ngIf='i < 10'>0</ng-container>{{i}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class='row'>
+                <div class='col-md-6'>
+                  <div class='form-group'>
+                    <label>Horário de Fim</label>
+                    <div class='row'>
+                      <div class='col-5'>
+                        <input type='text' class='form-control-sm form-control' formControlName='horaFim' disabled />
+                      </div>
+                      <div class='col-1'>:</div>
+                      <div class='col-5'>
+                        <input type='text' class='form-control-sm form-control' formControlName='minutoFim' disabled />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col'>
+                  <button type="button" class="btn btn-dark mb-2" (click)="setRegistroAgenda()">Agendar</button>
+                 
+                </div>
+              </div>
+            </form>
+            <ng-container *ngIf='registroAgendaSent'>
+              <div class="alert alert-success" role="alert" *ngIf='registroAgendaMsg == ""'>
+                 Agendamento realizado com sucess.
+              </div>
+              <div class="alert alert-danger" role="alert" *ngIf='registroAgendaMsg != ""'>
+                 {{ registroAgendaMsg }}
+              </div>
+            </ng-container>
+            <h4 class='mt-4 pt-2 border-top'>Meus Agendamentos</h4>
+            <ng-container *ngFor='let agendamento of listaAgendamentos; let i = index'>
+              <div class='row p-2 border-bottom'>
+                <div class='col-md-10'>
+                  {{ agendamento.dt_agendamento | date: 'dd/MM/yyyy HH:mm' }}
+                </div>
+                <div class='col-md-2'>
+                  <button class="btn btn-danger btn-sm text-light" (click)='removerAgendamento(agendamento.codigo)'>Cancelar</button>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

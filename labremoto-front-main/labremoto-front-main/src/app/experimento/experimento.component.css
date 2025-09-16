@@ -1,0 +1,128 @@
+#low-bar {
+    position: fixed;
+    z-index: 10;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #eaeaea;
+    padding: 15px;
+    color: #666;
+    font-size: .7em;
+
+}
+
+#low-bar .left-bottom {
+    border-right: 1px solid #fff;
+}
+
+#camera-wrap {
+    width: 100%;
+}
+
+#camera-image, #mapeamento-image, #trajetoria-image {
+    max-width: 100%;
+}
+
+.experimento-select-wrap
+{
+    text-align: center;
+    font-size: 1.2em;
+    border: 1px solid #666;
+    border-radius: 3px;
+    padding-top: 10px;
+    user-select: none;
+}
+
+.experimento-select-wrap:hover {
+    cursor: pointer;
+    background: #ddd;
+}
+
+.experimento-desc
+{
+    font-size: 12px;
+    text-align: justify;
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #666;
+}
+
+.control-experimento {
+    border-radius: 4px;
+    text-align: center;
+    margin: auto 0px;
+    padding: 10px 0px;
+    cursor: pointer;
+}
+
+.play-experimento {
+    background: #61da75;
+    color: #18862a;
+    border: 1px solid #18862a;
+}
+
+.play-experimento:hover {
+    background: #18862a;
+    color: #fff;
+}
+
+.stop-experimento {
+    background: #e07171;
+    color: #b41515;
+    border: 1px solid #b41515;
+}
+
+.stop-experimento:hover {
+    background: #b41515;
+    color: #fff;
+}
+.finish-experimento {
+    background: #007bff;
+    color: #fff;
+    border: 1px solid #2a537e;
+}
+
+.finish-experimento:hover {
+    background: #0558b1;
+    color: #fff;
+    border: 1px solid #2a537e;
+}
+
+.play-experimento:disabled, .stop-experimento:disabled, .finish-experimento:disabled {
+    color: #fff;
+    background: #666;
+    border: 1px solid #333;
+    cursor: auto;
+}
+
+.dados-experimento-title {
+    border-top: 1px solid rgba(0,0,0,.125);
+    padding: 7px 0px;
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: rgba(0,0,0,.525);
+}
+
+.instrucoes-list-wrap {
+    margin: 10px auto;
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+.instrucoes-list-wrap .padding {
+    padding: 15px;
+    font-size: 1.2em;
+}
+
+.instrucoes-wrap
+{
+    margin: 8px;
+    margin-bottom: 20px;
+}
+
+.instrucoes-small {
+    font-size: .7em;
+}
+
+.camera-nav-tab span {
+    cursor: pointer;
+}

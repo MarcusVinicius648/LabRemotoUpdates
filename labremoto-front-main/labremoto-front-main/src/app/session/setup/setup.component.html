@@ -1,0 +1,23 @@
+<h2 class='session-title text-muted'>Iniciar Nova Sessão</h2>
+<div class='row'>
+  <div class='col-md-12'>
+    <h5>Para iniciar uma nova sessão leia atentamente as instruções abaixo e clique no botão.</h5>
+  </div>
+  <div class='col-md-12'>
+    <div class="card">
+      <div class="card-body">
+        <ul>
+          <li>O laboratório ficará disponível por um período de <strong>20 minutos</strong> para o seu usuário, sendo
+            possível prorrogar a sessão por mais 20 minutos caso não exista agendamento.</li>
+          <li>Você será desconectado caso o laboratório fique ocioso por <strong>5 minutos</strong>. </li>
+          <li>O guia de utilização do laboratório, assim como o detalhamento de cada experimento pode ser encontrado na
+            <a routerLink="ajuda">página de ajuda</a>.</li>
+          <li>Os dados do seu experimento ficarão disponíveis no <a routerLink="historico">histórico</a> após o fim da sessão.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class='col-md-12'>
+    <button type="button" class='mt-3 btn btn-dark' (click)="startSession()">Iniciar Sessão</button>
+  </div>
+</div>

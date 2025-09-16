@@ -1,0 +1,20 @@
+<div class='menu' *ngIf='collapse == false'>
+  <div class='title'>Menu</div>
+  <div class='user'>
+    <div class='name'>{{ usuario.nome }}</div>
+    <div class='matricula'>{{ usuario.matricula }}</div>
+  </div>
+  <div class='itens'>
+    <ng-container *ngFor='let item of itens'>
+      <a [routerLink]="[item.route]">
+        <div class='item'>{{ item.label }}</div>
+      </a>
+    </ng-container>
+  </div>
+</div>
+<div class='collapsable collapsable-false' (click)='toggleCollapse()' *ngIf='collapse == false'>
+  <span class='fa fa-arrow-left'></span>
+</div>
+<div class='collapsable collapsable-true' (click)='toggleCollapse()' *ngIf='collapse == true'>
+  <span class='fa fa-arrow-right'></span>
+</div>

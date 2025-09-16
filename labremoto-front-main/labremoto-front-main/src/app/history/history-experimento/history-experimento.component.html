@@ -1,0 +1,267 @@
+<div class='content'>
+    <div class='row mt-4' *ngIf='experimento != null'>
+        <div class='col-md-12'>
+            <div class="card">
+                <div class="card-header">
+                    Informações
+                </div>
+                <div class='card-body'>
+                    <div class='row'>
+                        <div class='col-md-12'>
+                            <strong>Tipo:</strong> {{ experimento.label }}
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-12'>
+                            <strong>Data:</strong> {{ experimento.dtInicio | date: 'dd/MM/YYYY HH:mm' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='row mt-2 mb-2'>
+        <div class='col-md-9'>
+            <div class="card">
+                <div class="card-header">
+                    Planejamento e Trajetória
+                </div>
+                <div class='card-body' #canvasContainer>
+                    <canvas #graphCanvas (click)='graphClick($event)' style='border: 1px solid #444;'></canvas>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-3 col-sm-12 pt-3'>
+            <h6 class='border-bottom pb-2'>Exibir</h6>
+            <form class='form-group mt-2'>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="trajetoriaRealCheck" checked
+                        (click)='drawOptions(0)'>
+                    <label class="form-check-label" for="trajetoriaRealCheck">
+                        Trajetória Real
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="trajetoriaPlanejadaCheck" checked
+                        (click)='drawOptions(1)'>
+                    <label class="form-check-label" for="trajetoriaPlanejadaCheck">
+                        Trajetória Planejada
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="obstaculosCheck" checked
+                        (click)='drawOptions(2)'>
+                    <label class="form-check-label" for="obstaculosCheck">
+                        Obstáculos
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="safeSpaceCheck" checked
+                        (click)='drawOptions(3)'>
+                    <label class="form-check-label" for="safeSpaceCheck">
+                        Zona de Segurança
+                    </label>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class='row mt-2 mb-2'>
+
+        <div class='col-md-12'>
+            <div class="card">
+                <div class="card-header">
+                    Gráfico
+                </div>
+                <div class='card-body' #graphContainer>
+                    <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [legend]="legend"
+                        [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxis]="xAxis"
+                        [yAxis]="yAxis" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [timeline]="timeline"
+                        [results]="multi" (select)="onSelect($event)" (activate)="onActivate($event)"
+                        (deactivate)="onDeactivate($event)">
+                    </ngx-charts-line-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='row mb-2' *ngIf='experimento != null && experimentoParametros != null'>
+        <div class='col-md-6 col-sm-12'>
+            <div class="card">
+                <div class="card-header">
+                    Parâmetros
+                </div>
+
+                <div class='card-body'>
+                    <div class='text-center'>Parâmetros do Controlador</div>
+                    <div class='row'>
+                        <div class='col-md-3 col-sm-12'><strong>Tipo do Controlador</strong></div>
+                        <div class='col-md-8 col-sm-12'>
+                            <ng-container *ngIf='experimentoParametros.tipoControlador == 1'>PID Duplo - Coordenadas
+                                Polares</ng-container>
+                            <ng-container *ngIf='experimentoParametros.tipoControlador == 2'>Proporcional - Feedback
+                                Linearization</ng-container>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-3 col-sm-12'><strong>
+                                <ng-container *ngIf='experimentoParametros.tipoControlador == 1'>Kp - Linear
+                                </ng-container>
+                                <ng-container *ngIf='experimentoParametros.tipoControlador == 2'>K</ng-container>
+                            </strong></div>
+                        <div class='col-md-8 col-sm-12'>{{experimentoParametros.kp}}</div>
+                    </div>
+                    <ng-container *ngIf='experimentoParametros.tipoControlador == 1'>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Ki - Linear</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.ki}}</div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Kd - Linear</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.kd}}</div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Kp - Angular</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.kp_ang}}</div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Kd - Angular</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.kd_ang}}</div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Ki - Angular</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.ki_ang}}</div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf='experimento.codExperimento == 2'>
+                        <div class='text-center'>Parâmetros de Trajetória</div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Obstáculos</strong></div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.obstaculos == 1'>Habilitados
+                            </div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.obstaculos == 0'>Desabilitados
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf='experimento.codExperimento == 1'>
+                        <div class='text-center'>Planejamento de Caminho</div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Algoritmo de Busca</strong></div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.algoritmoBusca == 1'>A*</div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.algoritmoBusca == 2'>
+                                Breadth-First-Search</div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.algoritmoBusca == 3'>Best First
+                                Search</div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.algoritmoBusca == 4'>Jump Point
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Heuristica</strong></div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.heuristica == 1'>Euclidiana
+                            </div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.heuristica == 2'>Manhattan
+                            </div>
+                            <div class='col-md-8 col-sm-12' *ngIf='experimentoParametros.heuristica == 3'>Chebyshev
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Escala do Mapa</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.tamanhoMapaBusca}}x</div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-md-3 col-sm-12'><strong>Escala de Segurança</strong></div>
+                            <div class='col-md-8 col-sm-12'>{{experimentoParametros.tamanhoAreaSeguranca}}x</div>
+                        </div>
+
+                        <div class='text-center'>Objetivo</div>
+
+                        <div class='text-center' *ngIf='experimentoResultados[0] != null'>
+                            <strong>({{experimentoResultados[0].data.objetivoX}},{{experimentoResultados[0].data.objetivoY}})</strong>
+                        </div>
+
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-6 col-sm-12' *ngIf='experimento.codExperimento == 1'>
+            <div class="card">
+                <div class="card-header">
+                    Planejamento de Caminho
+                </div>
+
+                <div class='card-body' *ngIf='experimentoParametros.estatisticasBusca != null'>
+                    <div class='row'>
+                        <div class='col-md-3 col-sm-12'><strong>Tempo de processamento:</strong></div>
+                        <div class='col-md-8 col-sm-12'>
+                            {{experimentoParametros.estatisticasBusca.finalTimestamp - experimentoParametros.estatisticasBusca.initTimestamp}}ms
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-3 col-sm-12'><strong>Iterações:</strong></div>
+                        <div class='col-md-8 col-sm-12'>
+                            {{experimentoParametros.estatisticasBusca.iterationsCounter}}
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-3 col-sm-12'><strong>Nós Abertos:</strong></div>
+                        <div class='col-md-8 col-sm-12'>
+                            {{experimentoParametros.estatisticasBusca.visitedNodes}}
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md-3 col-sm-12'><strong>Tamanho do caminho:</strong></div>
+                        <div class='col-md-8 col-sm-12'>
+                            {{experimentoParametros.estatisticasBusca.pathLen}}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class='col-md-6 col-sm-12' *ngIf='experimento.codExperimento == 2'>
+            <div class="card">
+                <div class="card-header">
+                    Instruções
+                </div>
+
+                <div class='card-body'>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='row' *ngIf='experimento != null'>
+        <div class='col-md-12'>
+            <div class="card">
+                <div class="card-header">
+                    Resultados
+                </div>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Início</th>
+                        <th scope="col">Tempo</th>
+                        <th scope="col">Pos x</th>
+                        <th scope="col">Pos y</th>
+                        <th scope="col">Vel Linear</th>
+                        <th scope="col">Vel Angular</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let resultado of experimentoResultados; let i = index '>
+                        <td scope="row">{{ resultado.startTime | date: 'HH:mm' }}</td>
+                        <td scope="row">{{ resultado.dtCriacao | date: 'HH:mm:ss' }}</td>
+                        <td>{{ resultado.posX }}</td>
+                        <td>{{ resultado.posY }}</td>
+                        <td>{{ resultado.linearVel }}</td>
+                        <td>{{ resultado.angularVel }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <angular-csv-btn [data]="csvData" filename="resultados" [options]="csvOptions">
+                <button class='btn btn-primary' style='margin-top: 10px; margin-bottom: 30px;'>Exportar CSV</button>
+            </angular-csv-btn>
+        </div>
+    </div>
+
+</div>

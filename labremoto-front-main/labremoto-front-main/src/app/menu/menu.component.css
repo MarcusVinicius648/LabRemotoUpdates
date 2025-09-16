@@ -1,0 +1,63 @@
+.menu
+{
+    float: left;
+    position: absolute;
+    min-height: 110vh;
+    left: 0;   
+    background: #eaeaea;
+    width: 185px;
+    padding-bottom: 50px;
+}
+.collapsable
+{
+    float: left;
+    padding: 5px;
+    position: absolute;
+    background: #df3e40;
+    font-size: .6em;
+    border-bottom-right-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.collapsable-false {
+    margin-left: 185px;
+}
+
+.collapsable-true {
+    margin-left: 0px;
+}
+
+.title {
+    padding: 10px;
+    text-align: center;
+    font-size: 1.2em;
+    background: #df3e40;
+    color: #fff;
+    border-bottom: 1px solid #e1585b;
+}
+
+.itens .item {
+    display: block;
+    padding: 10px 25px;
+    text-decoration: none;
+    color: #000;
+}
+.itens a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: #e1585b;
+}
+.itens .item:hover {
+    text-decoration: none;
+    color: #fff;
+    background: #e1585b;
+}
+
+.user {
+    text-align: center;
+    color: #fff;
+    background: #e1585b;
+    font-size: .8em;
+    padding: 7px;
+}

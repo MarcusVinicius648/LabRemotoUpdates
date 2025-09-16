@@ -1,0 +1,39 @@
+<div class="main-wrapper">
+    <header>
+            
+        <div class='row'>
+            <div class='col-md-9'>
+                    <div class='title'><span class="material-icons">
+                            precision_manufacturing
+                            </span>  <strong>L</strong>aboratório <strong>R</strong>emoto de <strong>R</strong>obótica
+                        <strong>M</strong>óvel | UFOP</div>
+            </div>
+            <div class='col-md-3'>
+
+                    <img src='assets/bootstrap/img/logoem.png' class='img img-fluid logo-em'/>
+            </div>
+        </div>
+        
+       
+    </header>
+    <div class='body-wrap'>
+        <div class='container-fluid' *ngIf='usuario != null'>
+            <div class='row'>
+                <div class='menu'>
+                    <app-menu (toggleMenu)='toggleMenu()'></app-menu>
+                </div>
+                <div class='content-{{ menuCollapsed }} container-fluid'>
+                    <router-outlet></router-outlet>
+                </div>
+                <div class='clearfix'></div>
+            </div>
+        </div>
+        <div class='container-fluid' *ngIf='usuario == null'>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+    <footer>
+
+    </footer>
+</div>
+<ng-http-loader [filteredMethods]="['GET']"></ng-http-loader>

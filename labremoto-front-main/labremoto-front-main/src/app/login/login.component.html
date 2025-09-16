@@ -1,0 +1,33 @@
+<div class='container'>
+    <div class='clearfix'></div>
+    <div class='row'>
+        <div class='col-md-7 col-sm-12 padding-left'>
+            <img class='img img-fluid' src='assets/bootstrap/img/ev3login.png'>
+
+        </div>
+        <div class='col-md-5 col-sm-12'>
+            <form [formGroup]="loginForm">
+                <div class="card panel-width">
+                    <div class="card-header">
+                        Login
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" formControlName='login' id="matricula"
+                                aria-describedby="emailHelp" placeholder="CPF">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" formControlName='password' class="form-control" id="senha"
+                                placeholder="Senha">
+                        </div>
+                        <div class='alert alert-danger' *ngIf='errMessage != null'>
+                            {{ errMessage }}
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block" (click)="authUser()">Entrar</button>
+                        <div style='margin-top: 10px;'><small>Utilize os dados do <strong>MinhaUFOP</strong> para acessar.</small></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

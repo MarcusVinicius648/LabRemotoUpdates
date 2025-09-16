@@ -1,0 +1,16 @@
+.content-false
+{
+    margin-left: 200px;
+    padding-left: 10px;
+}.content-true
+{
+    padding-left: 10px;
+    margin-left: 20px;
+}
+.logo-em {
+    max-height: 120px;
+    float: right;
+    padding: 20px;
+    padding-right: 50px;
+    display: block;
+}

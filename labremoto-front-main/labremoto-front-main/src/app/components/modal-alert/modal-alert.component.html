@@ -1,0 +1,31 @@
+<!-- Modal -->
+<div class="modal fade in" id="{{modalId}}" tabindex="0" role="dialog" [attr.aria-labelledby]="modalId+'Label'"
+    [style.z-index]="zIndex" [style.display]="showDisplay()">
+    <div class="modal-dialog {{modalSizeClass}}" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <h4 class="modal-title text-center" id="{{modalId}}Label">{{title}}</h4>
+             
+                <button *ngIf="!triggerOnClose" type="button" class="close" data-dismiss="modal"
+                    aria-label="Close"><span aria-hidden="true">&times;</span></button> 
+                    <button *ngIf="triggerOnClose"
+                    type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeFn()"><span
+                        aria-hidden="true">&times;</span></button>
+                </div>
+            <div class="modal-body">
+                <div *ngIf="body !== null"> {{body}} </div>
+                <ng-content *ngIf="body === null"></ng-content>
+            </div>
+            <div class="modal-footer" *ngIf="!noButtons">
+                <!-- Verifica se a triggerOnClose está ativa --> <button *ngIf="triggerOnClose" type="button"
+                    class="btn btn-default" data-dismiss="modal" (click)="closeFn()">{{printCancelText()}}</button>
+                <!-- Caso contrario só fecha o modal --> <button *ngIf="!triggerOnClose" type="button"
+                    class="btn btn-default" data-dismiss="modal">{{printCancelText()}}</button>
+                <!-- Verifica se o modal deve ser Fechado ao clicar em sim --> <button *ngIf="modalDismissOnSave"
+                    type="button" class="btn btn-primary" data-dismiss="modal"
+                    (click)="salvarFn()">{{printConfirmText()}}</button> <!-- Caso contrario nao fecha --> <button
+                    *ngIf="!modalDismissOnSave" type="button" class="btn btn-primary"
+                    (click)="salvarFn()">{{printConfirmText()}}</button> </div>
+        </div>
+    </div>
+</div>
