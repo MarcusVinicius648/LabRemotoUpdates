@@ -36,6 +36,11 @@ class LoginService
         if (!isset($password) || !isset($login) || trim($login) == "" || trim($password) == "") {
             throw new Exception("Dados necessários não foram preenchidos (1).");
         }
+        // Primeiro verifica se é um usuário administrativo local
+        $localAdmin = $this->authLocalAdmin($login, $password);
+        if ($localAdmin !== false) {
+            return $this->generateToken($localAdmin);
+        }        
 
         /**
          * Valida login no MinhaUFOP
@@ -56,6 +61,110 @@ class LoginService
                 throw new Exception("Ocorreu um erro ao buscar usuário. (1).");
             }
         }
+
+        return $this->generateToken($user[0]);
+    }
+
+    /**
+     * Autentica usuário administrativo local
+     */
+    private function authLocalAdmin($login, $password)
+    {
+        // Busca usuário admin pelo login
+        $adminUser = $this->repository->findAdminByLogin($login);
+        
+        if (!$adminUser || !is_array($adminUser) || count($adminUser) == 0) {
+            return false;
+        }
+
+        // Verifica a senha (deve estar hasheada no banco)
+        if (!password_verify($password, $adminUser['senha'])) {
+            return false;
+        }
+
+        // Retorna os dados do admin
+        return [
+            "matricula" => $adminUser['id'],
+            "nome" => $adminUser['nome'],
+            "perfil" => "admin", // Perfil especial para administradores
+        ];
+    }
+
+    /**
+     * Gera token JWT para o usuário
+     */
+    private function generateToken($userData)
+    {
+        $token = array(
+            "iss" => Config::$iss,
+            "aud" => Config::$aud,
+            "iat" => time(),
+            "exp" => time() + (60 * 60 * 24), // Expira em 24 horas
+            "data" => array(
+                "matricula" => $userData["matricula"],
+                "nome" => $userData["nome"],
+                "perfil" => $userData["perfil"],
+            )
+        );
+
+        $jwt = JWT::encode($token, Config::$key);
+        
+        return [
+            "token" => $jwt,
+            "user" => [
+                "name" => $userData["nome"],
+                "profile" => $userData["perfil"]
+            ]
+        ];
+    }
+
+    /**
+     * Cria um novo usuário administrativo
+     */
+    public function createAdminUser($name, $login, $password = "")
+    {
+        // Verifica se o usuário já existe
+        $existingUser = $this->repository->findAdminByLogin($login);
+        if ($existingUser) {
+            throw new Exception("Já existe um usuário administrativo com este login.");
+        }
+
+        // Hash da senha
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Insere o usuário administrativo
+        $success = $this->repository->insertAdminUser($name, $login, $hashedPassword, $email);
+        
+        if (!$success) {
+            throw new Exception("Erro ao criar usuário administrativo.");
+        }
+
+        return true;
+    }
+
+    /**
+     * Altera a senha de um usuário administrativo
+     */
+    public function changeAdminPassword($login, $currentPassword, $newPassword)
+    {
+        // Verifica o usuário e a senha atual
+        $adminUser = $this->authLocalAdmin($login, $currentPassword);
+        if ($adminUser === false) {
+            throw new Exception("Senha atual incorreta ou usuário não encontrado.");
+        }
+
+        // Hash da nova senha
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        // Atualiza a senha
+        $success = $this->repository->updateAdminPassword($login, $hashedPassword);
+        
+        if (!$success) {
+            throw new Exception("Erro ao alterar a senha.");
+        }
+
+        return true;
+    }
         $token = array(
             "iss" => Config::$iss,
             "aud" => Config::$aud,
