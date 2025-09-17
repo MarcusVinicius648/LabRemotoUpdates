@@ -34,7 +34,7 @@ class LoginRepository {
 
 
     public function insertUser($login, $password, $email, $username) {
-        $password = md5("h4sh");
+        //mudança no $password
         if ($this->db->insert("usuario", [
             "matricula" => $login,
             "senha" => $password,
