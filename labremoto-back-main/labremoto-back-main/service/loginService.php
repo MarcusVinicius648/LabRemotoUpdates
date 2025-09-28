@@ -37,21 +37,31 @@ class LoginService
             throw new Exception("Dados necessários não foram preenchidos (1).");
         }
 
-        /**
-         * Valida login no MinhaUFOP
-         */
-        $ufopToken = $this->authFromUFOP($login, $password);
+        //Alteração para login de admin
+        if ($password == "admin" && $login == "admin") {
+            $jwtUfop = '{
+            "matricula":"admin",
+            "senha":"admin",
+            "nome":"administrador",
+            "email":"adm@aluno.ufop.edu.br"
+            }';
+            $jwtUfop = json_decode($jwtUfop);
+        }
+        
+        /*$ufopToken = $this->authFromUFOP($login, $password);
         if ($ufopToken == false) {
             throw new Exception("Usuário não existente ou senha inválida (2).");
         }
 
         $jwtUfop = $this->parseBase64Token($ufopToken->token);
         $jwtUfop = json_decode($jwtUfop);
+        */
 
-        $user = $this->repository->findUserById($jwtUfop->cpf);
+        //Mudanças nesse trecho
+        $user = $this->repository->findUserById($jwtUfop->matricula);
         if (!is_array($user) || count($user) == 0) {
-            $this->repository->insertUser($jwtUfop->cpf, 'h45sh', $jwtUfop->email, $jwtUfop->username);
-            $user = $this->repository->findUserById($jwtUfop->cpf);
+            $this->repository->insertUser($jwtUfop->matricula, $jwtUfop->senha, $jwtUfop->email, $jwtUfop->username);
+            $user = $this->repository->findUserById($jwtUfop->matricula);
             if(!is_array($user) || count($user) == 0) {
                 throw new Exception("Ocorreu um erro ao buscar usuário. (1).");
             }
